@@ -84,6 +84,30 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
             }
         }
     }
+    data class Renderer(var view:TwoCircleFillView, var time:Int = 0) {
+        val animator = Animator(view)
+        var twoCircleFill:TwoCircleFill?=null
+        fun render(canvas:Canvas, paint:Paint) {
+            if(time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                twoCircleFill = TwoCircleFill(w/2,h/2, 0.75f * Math.min(w,h))
+            }
+            canvas.drawColor(Color.parseColor("#212121"))
+            twoCircleFill?.draw(canvas,paint)
+            time++
+            animator.animate {
+                twoCircleFill?.update {
+                    animator.stop()
+                }
+            }
+        }
+        fun handleTap() {
+            twoCircleFill?.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
 fun Canvas.drawClippedCircle(x:Float,y:Float,r:Float,scale:Float,paint:Paint) {
     save()
