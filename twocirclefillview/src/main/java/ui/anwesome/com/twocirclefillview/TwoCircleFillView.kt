@@ -25,11 +25,15 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
     data class TwoCircleFill(var x:Float,var y:Float,var size:Float) {
         val state = TwoCircleFillState()
         fun draw(canvas:Canvas,paint:Paint) {
-            paint.color = Color.parseColor("#f44336")
-            paint.strokeWidth = size/20
+            paint.color = Color.parseColor("#40a4df")
+            paint.strokeWidth = size/55
             paint.strokeCap = Paint.Cap.ROUND
             canvas.drawClippedCircle(x-size/2,y,size/6,1-state.scales[0],paint)
-            canvas.drawLine(x-size/3+(2*size/3)*(state.scales[1]),y,x-size/3+(2*size/3)*state.scales[0],y,paint)
+
+            paint.style = Paint.Style.STROKE
+            canvas.drawRect(x-size/3,y-size/20,x+size/3,y+size/20,paint)
+            paint.style = Paint.Style.FILL
+            canvas.drawRect(x-size/3+(2*size/3)*(state.scales[1]),y-size/20,x-size/3+(2*size/3)*state.scales[0],y+size/20,paint)
             canvas.drawClippedCircle(x+size/2,y,size/6,state.scales[1],paint)
         }
         fun update(stopcb:(Float) -> Unit) {
@@ -50,6 +54,7 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
                     jDir *= -1
                     j += jDir
                     prevScale = this.scales[j]
+                    dir = 0f
                     stopcb(prevScale)
                 }
             }
@@ -93,7 +98,7 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
             if(time == 0) {
                 val w = canvas.width.toFloat()
                 val h = canvas.height.toFloat()
-                twoCircleFill = TwoCircleFill(w/2,h/2, 0.75f * Math.min(w,h))
+                twoCircleFill = TwoCircleFill(w/2,h/2,  2*Math.min(w,h)/3)
             }
             canvas.drawColor(Color.parseColor("#212121"))
             twoCircleFill?.draw(canvas,paint)
@@ -121,9 +126,14 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
 fun Canvas.drawClippedCircle(x:Float,y:Float,r:Float,scale:Float,paint:Paint) {
     save()
     translate(x,y)
+    paint.style = Paint.Style.FILL
+    save()
     val path = Path()
     path.addCircle(0f,0f,r,Path.Direction.CW)
     clipPath(path)
-    drawRect(RectF(-r, r - 2*r*scale, r, r),paint)
+    drawRect(RectF(-r, 3*r/10 - (r+3*r/10)*scale, r, r),paint)
+    restore()
+    paint.style = Paint.Style.STROKE
+    drawCircle(0f,0f,r,paint)
     restore()
 }
