@@ -21,19 +21,20 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
         return true
     }
     data class TwoCircleFill(var x:Float,var y:Float,var size:Float) {
+        val state = TwoCircleFillState()
         fun draw(canvas:Canvas,paint:Paint) {
             paint.color = Color.parseColor("#f44336")
             paint.strokeWidth = size/20
             paint.strokeCap = Paint.Cap.ROUND
-            canvas.drawClippedCircle(x-size/2,y,size/6,1f,paint)
-            canvas.drawLine(x-size/3+2*size/3,y,x-size/3+2*size/3,y,paint)
-            canvas.drawClippedCircle(x+size/2,y,size/6,1f,paint)
+            canvas.drawClippedCircle(x-size/2,y,size/6,1-state.scales[0],paint)
+            canvas.drawLine(x-size/3+(2*size/3)*(state.scales[1]),y,x-size/3+(2*size/3)*state.scales[0],y,paint)
+            canvas.drawClippedCircle(x+size/2,y,size/6,state.scales[1],paint)
         }
         fun update(stopcb:(Float) -> Unit) {
-
+            state.update(stopcb)
         }
         fun startUpdating(startcb:() -> Unit) {
-
+            state.startUpdating(startcb)
         }
     }
     data class TwoCircleFillState(var prevScale:Float = 0f,var dir:Float = 0f,var j:Int = 0,var jDir:Int = 1) {
