@@ -3,19 +3,21 @@ package ui.anwesome.com.twocirclefillview
 /**
  * Created by anweshmishra on 12/02/18.
  */
+import android.app.Activity
 import android.graphics.*
 import android.content.*
 import android.view.*
 
 class TwoCircleFillView(ctx:Context):View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val renderer = Renderer(this)
     override fun draw(canvas:Canvas) {
-
+        renderer.render(canvas, paint)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                renderer.handleTap()
             }
         }
         return true
@@ -106,6 +108,13 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
             twoCircleFill?.startUpdating {
                 animator.start()
             }
+        }
+    }
+    companion object {
+        fun create(activity:Activity):TwoCircleFillView {
+            val view = TwoCircleFillView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
