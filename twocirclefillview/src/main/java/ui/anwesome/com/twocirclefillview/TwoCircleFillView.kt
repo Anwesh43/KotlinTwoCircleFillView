@@ -36,6 +36,28 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
 
         }
     }
+    data class TwoCircleFillState(var prevScale:Float = 0f,var dir:Float = 0f,var j:Int = 0,var jDir:Int = 1) {
+        val scales:Array<Float> = arrayOf(0f,0f)
+        fun update(stopcb: (Float) -> Unit) {
+            scales[j] += 0.1f * dir
+            if(Math.abs(scales[j] - prevScale) > 1) {
+                this.scales[j] = prevScale + dir
+                j += jDir
+                if(j == scales.size || j == -1) {
+                    jDir *= -1
+                    j += jDir
+                    prevScale = this.scales[j]
+                    stopcb(prevScale)
+                }
+            }
+        }
+        fun startUpdating(startcb: () -> Unit) {
+            if(this.dir == 0f) {
+                this.dir = 1f - 2*this.prevScale
+                startcb()
+            }
+        }
+    }
 }
 fun Canvas.drawClippedCircle(x:Float,y:Float,r:Float,scale:Float,paint:Paint) {
     save()
