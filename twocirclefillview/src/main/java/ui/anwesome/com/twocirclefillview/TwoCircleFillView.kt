@@ -11,6 +11,10 @@ import android.view.*
 class TwoCircleFillView(ctx:Context):View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
+    var circleFillListener:CircleFillListener?=null
+    fun addCircleFillListener(onFill: (Int) -> Unit) {
+        circleFillListener = CircleFillListener(onFill)
+    }
     override fun draw(canvas:Canvas) {
         renderer.render(canvas, paint)
     }
@@ -106,6 +110,10 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
             animator.animate {
                 twoCircleFill?.update {
                     animator.stop()
+                    when(it) {
+                        0f -> view.circleFillListener?.onFillListener?.invoke(1)
+                        1f -> view.circleFillListener?.onFillListener?.invoke(2)
+                    }
                 }
             }
         }
@@ -122,6 +130,7 @@ class TwoCircleFillView(ctx:Context):View(ctx) {
             return view
         }
     }
+    data class CircleFillListener(var onFillListener:(Int)->Unit)
 }
 fun Canvas.drawClippedCircle(x:Float,y:Float,r:Float,scale:Float,paint:Paint) {
     save()
